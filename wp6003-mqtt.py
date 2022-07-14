@@ -8,18 +8,16 @@ from bleak.exc import BleakError
 
 import paho.mqtt.publish as publish
 
-CORR=18
-BROKER = "10.0.10.10"
+BROKER = "192.168.4.2"  # Change to your Broker IP!
 MQTT_ID = "WP6003_"
-# default port is 1883
-MQTT_PORT = 1883
+MQTT_PORT = 1883        # default port is 1883
 
 SENSOR_UUID = "0000FFF4-0000-1000-8000-00805F9B34FB"
 COMMAND_UUID = "0000FFF1-0000-1000-8000-00805F9B34FB"
 
 def notification_handler(sender, data):
     if len(data) == 18:
-        msgs = [{'topic': "sensor/temperature", 'payload': (data[6]*256+data[7]+CORR)/10}, ("sensor/CO2", (data[16]*256+data[17]), 0, False), ("sensor/HCHO",(data[12]*256+data[13]), 0, False), ("sensor/TVOC",(data[10]*256+data[11]), 0, False), ("sensor/state","connected", 0, False), ("sensor/address",address, 0, False)]
+        msgs = [{'topic': "sensor/temperature", 'payload': (data[6]*256+data[7])/10}, ("sensor/CO2", (data[16]*256+data[17]), 0, False), ("sensor/HCHO",(data[12]*256+data[13]), 0, False), ("sensor/TVOC",(data[10]*256+data[11]), 0, False), ("sensor/state","connected", 0, False), ("sensor/address",address, 0, False)]
         publish.multiple(msgs, hostname=BROKER, client_id=MQTT_ID, port=MQTT_PORT)
 
 async def run(address):
